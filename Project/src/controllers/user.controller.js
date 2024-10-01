@@ -1,7 +1,6 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import {ApiError} from "../utils/ApiError.js";
 import {User} from "../models/user.model.js"
-import { response } from "express";
 import {uploadOnCloudinary} from "../utils/Cloudinary.js";
 import { ApiRespose } from "../utils/ApiResponse.js";
 
@@ -14,8 +13,6 @@ import { ApiRespose } from "../utils/ApiResponse.js";
 //remove password and refresh token from response
 //check from the user creation
 // return response
-
-
 
 
 const registerUser = asyncHandler(async (req,res) => {
@@ -45,14 +42,19 @@ const registerUser = asyncHandler(async (req,res) => {
     }
 
     const avatarLocalPath = req.files?.avatar[0]?.path; 
-    const converImageLocalPath = req.files?.converImage[0]?.path;
+    // const converImageLocalPath = req.files?.converImage[0]?.path;
+
+    let coverImageLocalPath;
+    if (req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0){
+        coverImageLocalPath = req.files.coverImage[0].path
+    }
 
     if (!avatarLocalPath) {
         throw new ApiError(400, 'Avatar file is requred')
     }
 
     const avatar = await uploadOnCloudinary(avatarLocalPath)
-    const coverImage = await uploadOnCloudinary(converImageLocalPath)
+    const coverImage = await uploadOnCloudinary(coverImageLocalPath)
 
     if (!avatar) {
         throw new ApiError(400, 'Avatar file is requred')
